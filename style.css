@@ -52,7 +52,7 @@ main > * + * { margin-top: 14px; }
 .seg button { border: 0; background: none; color: var(--mute); font: inherit; padding: 6px 14px; border-radius: 9px; cursor: pointer; }
 .seg button.on { background: var(--solid); color: var(--solid-ink); }
 .fields { display: grid; gap: 10px; }
-textarea, input[type=text], input[type=password] { width: 100%; font: inherit; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; resize: vertical; }
+textarea, input[type=text], input[type=password], input[type=url], input[type=tel], input[type=email] { width: 100%; font: inherit; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; resize: vertical; }
 textarea:focus, input:focus { outline: none; border-color: var(--ink); }
 .pw { position: relative; }
 .pw input { padding-right: 48px; }
@@ -92,3 +92,9 @@ dialog .qr-box { display: inline-block; }
 
 footer { color: var(--mute); font-size: 0.82rem; padding-bottom: 30px; }
 footer a { color: inherit; }
+
+.types { display: flex; margin-bottom: 14px; }
+.types button { padding: 6px 12px; }
+.ghost { font: inherit; font-weight: 500; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.logo-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+.center { text-align: center; }
