@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR Kod</title>
+<meta name="description" content="Bağlantı, metin ya da Wi-Fi için QR kod oluştur. İstersen bu tarayıcıya kaydet.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232e3033' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.5'/%3E%3Cpath d='M14 14h3v3M21 14v.01M14 21h3M21 18v3h-1'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#efede8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1f2022" media="(prefers-color-scheme: dark)">
+<script src="theme.js?v=1"></script>
+<link rel="stylesheet" href="style.css?v=1">
+<script type="module" src="app.js?v=1"></script>
+</head>
+<body>
+<header>
+  <a class="home" href="/"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> Uygulamalar</a>
+  <h1>QR Kod</h1>
+  <p class="sub">Yaz, QR kodun hazır. İstersen bu tarayıcıya kaydet.</p>
+</header>
+
+<main>
+  <section class="card glass">
+    <div class="seg" id="mode">
+      <button data-m="text" class="on">Metin / bağlantı</button>
+      <button data-m="wifi">Wi-Fi</button>
+    </div>
+
+    <div id="f-text" class="fields">
+      <textarea id="text" rows="3" placeholder="Bağlantı, şifre ya da herhangi bir yazı…" autocomplete="off" spellcheck="false"></textarea>
+    </div>
+
+    <div id="f-wifi" class="fields hidden">
+      <input id="ssid" type="text" placeholder="Ağ adı" autocomplete="off" spellcheck="false">
+      <div class="pw">
+        <input id="wpass" type="password" placeholder="Şifre" autocomplete="off" spellcheck="false">
+        <button class="icon-btn" id="wshow" type="button" title="Şifreyi göster" aria-label="Şifreyi göster">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <p class="hint">Telefon kamerasıyla okutunca şifre yazmadan ağa bağlanır.</p>
+    </div>
+  </section>
+
+  <section id="out" class="card glass out hidden">
+    <div class="qr-box"><canvas id="qr"></canvas></div>
+    <div class="actions">
+      <button class="primary" id="save" type="button">
+        <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        <span>Kaydet</span>
+      </button>
+      <button id="dl" type="button">
+        <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/></svg>
+        İndir
+      </button>
+    </div>
+    <div id="name-row" class="name-row hidden">
+      <input id="name" type="text" placeholder="Bir ad ver (örn. Ev Wi-Fi)" maxlength="60" autocomplete="off">
+      <button class="primary" id="name-ok" type="button">Tamam</button>
+    </div>
+    <p class="hint" id="too-long"></p>
+  </section>
+
+  <section id="saved-wrap" class="hidden">
+    <h2>Kayıtlı kodlarım</h2>
+    <ul id="saved" class="saved"></ul>
+    <p class="hint">Yalnızca bu tarayıcıda saklanır, başka cihazda görünmez. Şifreli değildir; telefonunu kullanan biri görebilir.</p>
+  </section>
+</main>
+
+<dialog id="view" class="glass">
+  <div class="view-head">
+    <strong id="v-name"></strong>
+    <button class="icon-btn" id="v-close" type="button" aria-label="Kapat" title="Kapat">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <div class="qr-box"><canvas id="v-qr"></canvas></div>
+  <p class="v-text" id="v-text"></p>
+  <div class="actions">
+    <button id="v-copy" type="button">Yazıyı kopyala</button>
+    <button id="v-dl" type="button">İndir</button>
+    <button id="v-del" type="button" class="danger">Sil</button>
+  </div>
+</dialog>
+
+<footer><p>Açık kaynak · <a href="https://github.com/dogukaska/qr">GitHub</a></p></footer>
+</body>
+</html>
