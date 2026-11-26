@@ -18,7 +18,8 @@ const digits = (s) => (s || "").replace(/\D/g, "");
 /** Türkiye numarasını uluslararası biçime çevirir: 0532… → 90532… */
 function intl(s) {
   let d = digits(s);
-  if (d.startsWith("00")) d = d.slice(2);
+  if (s.trimStart().startsWith("+")) return d;
+  if (d.startsWith("00")) return d.slice(2);
   if (d.startsWith("0")) d = "90" + d.slice(1);
   else if (d.length === 10 && d[0] === "5") d = "90" + d;
   return d;
