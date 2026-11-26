@@ -26,10 +26,13 @@ function intl(s) {
 function niceUrl(s) {
   s = (s || "").trim();
   if (!s) return "";
+  // Ana makine ve sayısal port, URL şeması değildir.
+  if (/^(?:localhost|[a-z0-9-]+(?:\.[a-z0-9-]+)+):\d+(?=[/?#]|$)/i.test(s)) return "https://" + s;
   return /^[a-z][a-z0-9+.-]*:/i.test(s) ? s : "https://" + s;
 }
 function ibanOk(iban) {
   if (!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(iban)) return false;
+  if (iban.startsWith("TR") && !/^TR\d{24}$/.test(iban)) return false;
   const r = (iban.slice(4) + iban.slice(0, 4)).replace(/[A-Z]/g, (ch) => ch.charCodeAt(0) - 55);
   let m = 0;
   for (const ch of r) m = (m * 10 + +ch) % 97;
@@ -229,7 +232,8 @@ async function shrinkLogo(file) {
   const bmp = await createImageBitmap(file);
   const s = Math.min(1, 256 / Math.max(bmp.width, bmp.height));
   const c = document.createElement("canvas");
-  c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+  c.width = Math.max(1, Math.round(bmp.width * s));
+  c.height = Math.max(1, Math.round(bmp.height * s));
   c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
   bmp.close?.();
   return c.toDataURL("image/png");
