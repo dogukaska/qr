@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#1f2022" media="(prefers-color-scheme: dark)">
 <script src="theme.js?v=2"></script>
 <link rel="stylesheet" href="style.css?v=2">
-<script type="module" src="app.js?v=2"></script>
+<script type="module" src="app.js?v=3"></script>
 </head>
 <body>
 <header>
@@ -121,6 +121,10 @@
       <input id="name" type="text" placeholder="Bir ad ver (örn. Ev Wi-Fi)" maxlength="60" autocomplete="off">
       <button class="primary" id="name-ok" type="button">Tamam</button>
     </div>
+    <label id="wifi-save" class="hint hidden">
+      <input id="wifi-consent" type="checkbox">
+      Wi-Fi şifresini bu tarayıcıda şifrelenmeden saklamayı kabul ediyorum.
+    </label>
     <p class="hint" id="too-long"></p>
   </section>
 

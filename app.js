@@ -253,6 +253,8 @@ function logoUi() {
 function update() {
   cur = build();
   const out = $("out");
+  $("name-row").classList.add("hidden");
+  $("wifi-save").classList.add("hidden");
   if (!cur) { out.classList.add("hidden"); return; }
   const q = makeQR(cur.text, !!logo);
   out.classList.remove("hidden");
@@ -303,19 +305,28 @@ function store(list) {
 
 function resetSave() {
   $("name-row").classList.add("hidden");
+  $("wifi-save").classList.add("hidden");
+  $("wifi-consent").checked = false;
+  $("name-ok").disabled = false;
   const saved = load().some((x) => x.text === cur.text && (x.logo || null) === (logo ? logo.url : null));
   $("save").disabled = saved;
   $("save").querySelector("span").textContent = saved ? "Kayıtlı" : "Kaydet";
 }
 
 $("save").addEventListener("click", () => {
+  if (!cur) return;
   $("name").value = cur.name;
   $("name-row").classList.remove("hidden");
+  const hasPassword = mode === "wifi" && Boolean(cur.copy);
+  $("wifi-save").classList.toggle("hidden", !hasPassword);
+  $("wifi-consent").checked = false;
+  $("name-ok").disabled = hasPassword;
   $("name").focus();
   $("name").select();
 });
 
 function confirmSave() {
+  if (!cur || $("name-row").classList.contains("hidden") || $("name-ok").disabled) return;
   const list = load();
   list.unshift({ id: Date.now().toString(36), name: $("name").value.trim() || cur.name, text: cur.text, type: mode,
     show: cur.show, copy: cur.copy, logo: logo ? logo.url : undefined, at: Date.now() });
@@ -323,6 +334,9 @@ function confirmSave() {
   resetSave();
   renderSaved();
 }
+$("wifi-consent").addEventListener("change", (e) => {
+  $("name-ok").disabled = !e.target.checked;
+});
 $("name-ok").addEventListener("click", confirmSave);
 $("name").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmSave(); });
 
