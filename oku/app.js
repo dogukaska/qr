@@ -1,3 +1,5 @@
+import { withDecodedImage } from "../image.js?v=1";
+
 const $ = (id) => document.getElementById(id);
 const video = $("video");
 const canvas = document.createElement("canvas");
@@ -147,17 +149,16 @@ $("file").addEventListener("change", async () => {
   stopCamera();
   clearResult();
   status("Görsel okunuyor…");
-  let bitmap;
   try {
     if (file.size > 30 * 1024 * 1024) throw Error("30 MB’tan küçük bir görsel seç.");
-    bitmap = await createImageBitmap(file);
+    const decoded = await withDecodedImage(file, (image, width, height) =>
+      current === generation ? decode(image,width,height,2000) : null);
     if (current !== generation) return;
-    const decoded = decode(bitmap,bitmap.width,bitmap.height,2000);
     if (!decoded?.data) throw Error("QR bulunamadı. Görseli kırpıp daha yakından tekrar dene.");
     showResult(decoded.data);
   } catch (error) {
     if (current === generation) status(error.message || "Görsel açılamadı.");
-  } finally { bitmap?.close(); }
+  }
 });
 $("copy").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText($("content").value); status("Kopyalandı."); }
