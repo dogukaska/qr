@@ -1,4 +1,5 @@
 import qrcode from "./vendor/qrcode.mjs";
+import { withDecodedImage } from "./image.js?v=1";
 
 // Türkçe karakterler için UTF-8
 const enc = new TextEncoder();
@@ -11,6 +12,7 @@ const INK = "#2e3033", PAPER = "#faf9f6";
 let mode = "text";
 let cur = null;      // { text, show, copy, name } — QR'a giden yazı ve okunur hali
 let logo = null;     // { url, img } — ortadaki logo
+let logoRequest = 0;
 const LOGO_PART = 0.22;  // logonun QR genişliğine oranı
 
 // ---------- Yardımcılar
@@ -230,25 +232,37 @@ async function loadLogo(url) {
 }
 /** Logoyu küçültüp veri adresine çevirir (kaydedilince yer kaplamasın) */
 async function shrinkLogo(file) {
-  const bmp = await createImageBitmap(file);
-  const s = Math.min(1, 256 / Math.max(bmp.width, bmp.height));
-  const c = document.createElement("canvas");
-  c.width = Math.max(1, Math.round(bmp.width * s));
-  c.height = Math.max(1, Math.round(bmp.height * s));
-  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
-  bmp.close?.();
-  return c.toDataURL("image/png");
+  return withDecodedImage(file, (image, width, height) => {
+    const scale = Math.min(1, 256 / Math.max(width, height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/png");
+  });
 }
 $("logo-file").addEventListener("change", async (e) => {
   const f = e.target.files[0];
   e.target.value = "";
   if (!f) return;
-  try { logo = await loadLogo(await shrinkLogo(f)); }
-  catch (err) { alert("Bu resim açılamadı."); return; }
+  const request = ++logoRequest;
+  let candidate;
+  try { candidate = await loadLogo(await shrinkLogo(f)); }
+  catch {
+    if (request === logoRequest) alert("Bu resim açılamadı.");
+    return;
+  }
+  if (request !== logoRequest) return;
+  logo = candidate;
   logoUi();
   update();
 });
-$("logo-del").addEventListener("click", () => { logo = null; logoUi(); update(); });
+$("logo-del").addEventListener("click", () => {
+  logoRequest++;
+  logo = null;
+  logoUi();
+  update();
+});
 function logoUi() {
   $("logo-del").classList.toggle("hidden", !logo);
   $("logo-lbl").textContent = logo ? "Logoyu değiştir" : "Ortaya logo ekle";

@@ -7,3 +7,5 @@ Adres: https://dogukaska.github.io/qr/
 Kütüphane: [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (MIT).
 
 QR oluşturma seçeneklerine Claude, QR oluşturma ve kamerayla okuma akışlarının geliştirme ve test çalışmalarına OpenAI Codex katkıda bulundu.
+
+QR görselleri ve logolar için tarayıcı uyumluluğu OpenAI Codex desteğiyle geliştirildi.
